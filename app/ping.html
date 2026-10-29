@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CAPRI ping</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; user-select: none; }
+  /* a small red tag with her mask, slammed in on twos */
+  #tag { position: absolute; left: 4px; top: 4px; height: 28px; display: flex; align-items: center; gap: 6px; padding: 0 12px 0 4px;
+    background: #ff2152; color: #fff4f6; font: 700 12px Rajdhani, sans-serif; letter-spacing: .18em; cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); filter: drop-shadow(3px 3px 0 #7b3dff); }
+  #tag:hover { background: #fff4f6; color: #ff2152; }
+  #tag.in { animation: slam .17s steps(4) both; }
+  @keyframes slam { 0% { transform: scale(1.6) translateX(-10px); opacity: 0; } 50% { transform: scale(.9); opacity: 1; } 75% { transform: scale(1.05); } 100% { transform: none; } }
+  canvas { width: 26px; height: 28px; }
+</style>
+</head>
+<body>
+<div id="tag"><canvas id="m" width="52" height="56"></canvas><span id="lbl">PING CAPRI</span></div>
+<script src="feed.js"></script>
+<script>
+  const { drawMask } = window.CapriDraw;
+  const ctx = document.getElementById('m').getContext('2d');
+  const tag = document.getElementById('tag');
+  function mask(eyes) { ctx.clearRect(0, 0, 52, 56); ctx.save(); ctx.translate(26, 40); ctx.scale(0.36, 0.36); drawMask(ctx, { eyes }); ctx.restore(); }
+  mask([1, 1]);
+  window.capri.on('show', (kind) => {
+    document.getElementById('lbl').textContent = kind === 'double' ? 'PING CAPRI' : 'ASK CAPRI';
+    tag.classList.remove('in'); void tag.offsetWidth; tag.classList.add('in');
+    mask([0.1, 0.1]); setTimeout(() => mask([1, 1]), 120);   // a blink as she notices
+  });
+  tag.addEventListener('click', () => window.capri.ping());
+</script>
+</body>
+</html>

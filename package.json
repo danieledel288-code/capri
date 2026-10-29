@@ -1,0 +1,65 @@
+{
+  "name": "capri",
+  "version": "0.3.0",
+  "description": "CAPRI: cyberpunk holocall assistant that sees your screen and annotates math.",
+  "main": "app/main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0"
+  },
+  "dependencies": {
+    "katex": "^0.19.1",
+    "mathjs": "^13.2.3"
+  },
+  "author": "Daniel Edelstein",
+  "build": {
+    "appId": "capri.holocall",
+    "productName": "Capri",
+    "files": [
+      "app/**",
+      "package.json",
+      "THIRD_PARTY_NOTICES.md"
+    ],
+    "extraResources": [
+      {
+        "from": "school-mode",
+        "to": "school-mode"
+      },
+      {
+        "from": ".",
+        "to": "core",
+        "filter": [
+          "*.py",
+          "persona.md",
+          "config.json"
+        ]
+      },
+      {
+        "from": "models",
+        "to": "core/models"
+      },
+      {
+        "from": "assets",
+        "to": "assets"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "runAfterFinish": true,
+      "createDesktopShortcut": false,
+      "shortcutName": "Capri",
+      "artifactName": "Capri-Setup-${version}.${ext}"
+    }
+  }
+}

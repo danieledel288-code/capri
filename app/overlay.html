@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CAPRI overlay</title>
+<link rel="stylesheet" href="../node_modules/katex/dist/katex.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --red: #ff2152; --cyan: #3ef2ff; --yellow: #f3e600; --paper: #fff4f6; --violet: #7b3dff; --ink: #0a0b11; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 100%; height: 100%; background: transparent; overflow: hidden; pointer-events: none; }
+  svg#lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  #marks.fading { animation: out .25s steps(3) forwards; }
+  @keyframes out { to { opacity: 0; } }
+
+  /* note cards */
+  .card { position: absolute; color: var(--paper); font-family: "Share Tech Mono", monospace;
+    filter: drop-shadow(3px 3px 0 rgba(123,61,255,.85)); }
+  .card .in { background: rgba(10,11,17,.94); border: 1px solid var(--tone); padding: 5px 10px 7px;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+  .card .hd { font-size: 10px; letter-spacing: .2em; color: var(--tone); margin-bottom: 2px; display: flex; gap: 6px; align-items: center; }
+  .card .hd::before { content: ""; width: 5px; height: 5px; background: var(--tone); }
+  .card .bd { font-size: 15px; line-height: 1.25; white-space: nowrap; }
+  .card .bd .katex { font-size: 1.12em; }
+  /* big cards: worked solutions and plots */
+  .card.big .in { padding: 7px 12px 10px; }
+  .card.big .hd { font-size: 11px; margin-bottom: 6px; }
+  .card.big .hd .katex { font-size: 1.05em; color: var(--paper); }
+  .card.work .bd { font-size: 18px; white-space: normal; max-width: 560px; }
+  .card.work .ln { display: grid; grid-template-columns: 18px auto; align-items: center; gap: 8px; padding: 2px 0; }
+  .card.work .ln + .ln { border-top: 1px dashed rgba(62,242,255,.16); }
+  .card.work .no { font: 700 12px Rajdhani, sans-serif; color: var(--violet); filter: brightness(1.6); text-align: right; }
+  .card.work .eq { white-space: nowrap; }
+  .card.work .eq .katex-display { margin: 2px 0; text-align: left; }
+  .card.work .eq .katex-display > .katex { text-align: left; font-size: 1.18em; }
+  .card.work .ln.last .eq { color: var(--yellow); }
+  .card.work .ln.last .no { color: var(--yellow); filter: none; }
+  .card.graph .bd { white-space: normal; }
+  .card.graph .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; margin-bottom: 4px; }
+  .card.graph .lg { display: flex; align-items: center; gap: 6px; }
+  .card.graph .lg i { width: 14px; height: 3px; display: inline-block; }
+  .card.graph .cap { font-size: 13px; margin-top: 4px; color: #c9d2dc; max-width: 380px; }
+  .plot { display: block; }
+  .plot .gl { stroke: rgba(255,255,255,.07); stroke-width: 1; }
+  .plot .ax { stroke: rgba(255,244,246,.55); stroke-width: 1.2; }
+  .plot .tk { fill: #8794a1; font: 11px "Share Tech Mono", monospace; }
+  .plot .curve { fill: none; stroke-width: 2.2; stroke-linejoin: round; }
+  .plot .sh { fill: none; stroke: #7b3dff; stroke-width: 3.5; opacity: .7; transform: translate(1.5px, 1.5px); }
+  .plot .vec { stroke-width: 2.6; stroke-linecap: round; }
+  .plot .area { opacity: .22; }
+  .plot .gd { fill: none; stroke-width: 1.2; stroke-dasharray: 5 4; }
+  .plot .al { fill: #c9d2dc; font: 12px "Share Tech Mono", monospace; letter-spacing: .04em; }
+  .plot .pv { fill: #c9d2dc; font: 10px "Share Tech Mono", monospace; paint-order: stroke; stroke: #0a0b11; stroke-width: 3px; }
+  .plot .pt { fill: var(--red); stroke: var(--paper); stroke-width: 1.2; }
+  .plot .pl { fill: var(--paper); font: 12px "Share Tech Mono", monospace; paint-order: stroke; stroke: #0a0b11; stroke-width: 3px; }
+  .card.enter { animation: enter .2s steps(4) both; }
+  @keyframes enter {
+    0% { clip-path: inset(0 100% 0 0); text-shadow: -3px 0 var(--red), 3px 0 var(--cyan); transform: translateX(-6px); }
+    50% { clip-path: inset(0 30% 0 0); text-shadow: 2px 0 var(--red), -2px 0 var(--cyan); }
+    100% { clip-path: inset(0 0 0 0); transform: none; }
+  }
+
+  /* subtitles, game style: speaker name + line, bottom centre */
+  #subs { position: absolute; left: 50%; bottom: 9%; transform: translateX(-50%); max-width: min(900px, 80vw); text-align: center;
+    font: 600 22px/1.35 Rajdhani, sans-serif; color: #f4f6f8; letter-spacing: .02em;
+    text-shadow: 0 1px 2px #000; opacity: 0; transition: opacity .2s steps(2);
+    background: linear-gradient(90deg, transparent, rgba(6,7,12,.78) 8%, rgba(6,7,12,.78) 92%, transparent); padding: 6px 48px 8px; }
+  #subs.on { opacity: 1; }
+  #subs b { color: var(--red); font-weight: 700; letter-spacing: .12em; margin-right: 8px; }
+  #subs .w { opacity: 0; } #subs .w.v { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="marks"><svg id="lines"></svg><div id="cards"></div></div>
+<div id="subs"></div>
+<script src="../node_modules/katex/dist/katex.min.js"></script>
+<script src="../node_modules/mathjs/lib/browser/math.js"></script>
+<script src="annot.js"></script>
+</body>
+</html>

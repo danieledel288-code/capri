@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CAPRI dock</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; user-select: none; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #tag { position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%); white-space: nowrap;
+    font: 700 10px Rajdhani, sans-serif; letter-spacing: .18em; color: #fff4f6; background: #ff2152; padding: 1px 8px;
+    clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%); opacity: 0; }
+  body.hover #tag { opacity: 1; }
+  body.hover { cursor: pointer; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="tag">CALL · CTRL+ALT+C</div>
+<script src="feed.js"></script>
+<script src="dock.js"></script>
+</body>
+</html>

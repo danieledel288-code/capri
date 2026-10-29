@@ -1,0 +1,6 @@
+node_modules/
+dist/
+models/
+__pycache__/
+# show art from capri-desktop: personal use only, never publish
+assets/skin/

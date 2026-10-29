@@ -1,0 +1,15 @@
+{
+  "hotkey": "ctrl+alt+c",
+  "model": "sonnet",
+  "work_model": "opus",
+  "ptt": "ctrl+win",
+  "voice": "af_bella",
+  "voice_speed": 1.15,
+  "voice_pitch": 2,
+  "comms_fx": true,
+  "stt_model": "base.en",
+  "max_ring_seconds": 3.5,
+  "x": 24,
+  "y": 24,
+  "screen_vision": true
+}
